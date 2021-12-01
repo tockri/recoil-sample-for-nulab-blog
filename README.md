@@ -2,12 +2,14 @@
 
 ## Prepare
 
-copy .
+```bash
+yarn
+```
 
 ## Run
 
 ```bash
 yarn dev
 ```
-Then open http://localhost:3000
 
+Then open http://localhost:3000
