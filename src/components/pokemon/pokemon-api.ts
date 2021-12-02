@@ -6,6 +6,10 @@ import {
 } from 'recoil'
 import { useEffect } from 'react'
 
+/* =======================
+Declared types of PokeAPI
+========================= */
+
 export type PokemonListItem = {
   readonly name: string
   readonly url: string
@@ -47,12 +51,29 @@ export type Pokemon = {
   }>
 }
 
+/* ======================
+Fetch functions
+======================= */
+
 const filterJa = <T extends { language: Language }>(
   entries: ReadonlyArray<T>
 ): ReadonlyArray<T> =>
   entries.filter(
     (i) => i.language.name === 'ja' || i.language.name === 'ja-Hrkt'
   )
+
+const fetchList = async (page: number): Promise<PokemonList> => {
+  const offset = 10 * (page - 1)
+  const apiUrl = `https://pokeapi.co/api/v2/pokemon-species/?limit=10&offset=${offset}`
+  const result = await fetch(apiUrl).then(
+      async (result) => (await result.json()) as PokemonList
+  )
+  return await new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(result)
+    }, 1000)
+  })
+}
 
 const fetchPokemon = async (name: string): Promise<Pokemon> => {
   const apiUrl = `https://pokeapi.co/api/v2/pokemon-species/${name}`
@@ -72,6 +93,10 @@ const fetchPokemon = async (name: string): Promise<Pokemon> => {
   })
 }
 
+/* ==========================
+Recoil states
+============================ */
+
 const pokemonAtom = atomFamily<Pokemon | null, string>({
   key: 'components.pokemon.pokemonAtom',
   default: null,
@@ -86,19 +111,6 @@ const pokemonSelector = selectorFamily<Pokemon, string>({
     },
 })
 
-const fetchList = async (page: number): Promise<PokemonList> => {
-  const offset = 10 * (page - 1)
-  const apiUrl = `https://pokeapi.co/api/v2/pokemon-species/?limit=10&offset=${offset}`
-  const result = await fetch(apiUrl).then(
-    async (result) => (await result.json()) as PokemonList
-  )
-  return await new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(result)
-    }, 1000)
-  })
-}
-
 const pokemonListAtom = atomFamily<PokemonList | null, number>({
   key: 'components.pokemon.pokemonListAtom',
   default: null,
@@ -112,6 +124,21 @@ const pokemonListSelector = selectorFamily<PokemonList, number>({
       get(pokemonListAtom(page)) || (await fetchList(page)),
 })
 
+/* =========================
+Hooks
+=========================== */
+
+export const usePokemon = (name: string): Pokemon => {
+  const pokemon = useRecoilValue(pokemonSelector(name))
+  const set = useSetRecoilState(pokemonAtom(name))
+  useEffect(() => {
+    if (pokemon) {
+      set(pokemon)
+    }
+  }, [name, pokemon])
+  return pokemon
+}
+
 export const usePokemonList = (page: number): PokemonList => {
   const pokemonList = useRecoilValue(pokemonListSelector(page))
   const set = useSetRecoilState(pokemonListAtom(page))
@@ -123,15 +150,4 @@ export const usePokemonList = (page: number): PokemonList => {
   }, [pokemonList])
 
   return pokemonList
-}
-
-export const usePokemon = (name: string): Pokemon => {
-  const pokemon = useRecoilValue(pokemonSelector(name))
-  const set = useSetRecoilState(pokemonAtom(name))
-  useEffect(() => {
-    if (pokemon) {
-      set(pokemon)
-    }
-  }, [name, pokemon])
-  return pokemon
 }

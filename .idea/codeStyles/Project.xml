@@ -80,6 +80,7 @@
       <option name="USE_CONTINUATION_INDENT_FOR_ARGUMENTS" value="true" />
     </Python>
     <ScalaCodeStyleSettings>
+      <option name="SCALAFMT_REFORMAT_ON_FILES_SAVE" value="true" />
       <option name="FORMATTER" value="1" />
     </ScalaCodeStyleSettings>
     <TypeScriptCodeStyleSettings version="0">
@@ -88,9 +89,6 @@
     <XML>
       <option name="XML_ALIGN_ATTRIBUTES" value="false" />
     </XML>
-    <editorconfig>
-      <option name="ENABLED" value="false" />
-    </editorconfig>
     <codeStyleSettings language="CSS">
       <indentOptions>
         <option name="INDENT_SIZE" value="2" />
