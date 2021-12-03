@@ -66,7 +66,7 @@ const fetchList = async (page: number): Promise<PokemonList> => {
   const offset = 10 * (page - 1)
   const apiUrl = `https://pokeapi.co/api/v2/pokemon-species/?limit=10&offset=${offset}`
   const result = await fetch(apiUrl).then(
-      async (result) => (await result.json()) as PokemonList
+    async (result) => (await result.json()) as PokemonList
   )
   return await new Promise((resolve) => {
     setTimeout(() => {
